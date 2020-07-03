@@ -17,6 +17,14 @@ var  Taskschema = new Schema({
     username:{
         type:String,
         required:true
+    },
+    time:{
+        type:Number,
+        default:0
+    },
+    ctime:{
+        type:Number,
+        default:0
     }
 });
 
