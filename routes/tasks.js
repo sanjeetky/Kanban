@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 var ObjectID = require('mongodb').ObjectID;
 const Task=require('../models/task');
-var Ob
+const { put } = require('./users');
 router.route('/')
 .post((req,res)=>{
 Task.create({
@@ -31,6 +31,17 @@ Task.deleteOne({_id:ObjectID(req.body.id)})
    res.json(item)
  },err=>console.log(err))
  .catch(err=>console.log(err));
+})
+.put((req,res)=>{
+    Task.updateOne({_id:ObjectID(req.body.id)},{status:req.body.opted})
+    .then(item=>{
+        console.log("changed")
+        res.statusCode=200;
+        res.setHeader('Content-Type','application/json')
+        res.json(item)
+    },err=>console.log(err))
+    .catch(err=>console.log(err));
+
 });
 
 

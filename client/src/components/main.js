@@ -7,6 +7,7 @@ import {
     Form, FormGroup, Col,Row,Input, Label,Image,View } from 'reactstrap';
    import { Control, LocalForm, Errors } from 'react-redux-form';
    import Select from 'react-select';
+import { unstable_batchedUpdates } from 'react-dom';
    const required = (val) => val && val.length;
    const maxLength = (len) => (val) => !(val) || (val.length <= len);
    const minLength = (len) => (val) => val && (val.length >= len);
@@ -19,6 +20,7 @@ import {
 class Main extends Component {
     constructor(props){
         super(props);
+       // this.handleChange=this.handleChange.bind(this);
         this.todos=this.todos.bind(this);
         this.dotodays=this.dotodays.bind(this);
         this.tsubmit=this.tsubmit.bind(this);
@@ -30,6 +32,7 @@ class Main extends Component {
         this.dikhao=this.dikhao.bind(this);
         this.dukan=this.dukan.bind(this);
         this.hatao=this.hatao.bind(this);
+        this.Update=this.Update.bind(this);
         this.state={
           todo:false,
           dotoday:false,
@@ -38,10 +41,20 @@ class Main extends Component {
           user:' ',
           tasks:[],
           kholo:false,
-        active:{}
+        active:{},
+        selectedOption: null,
+        opted:null
         }
     }
 
+    handleChange = selectedOption => {
+     this.setState({ selectedOption:selectedOption });
+     this.setState({opted:selectedOption.value},()=>
+     {
+       console.log(this.state.opted)
+     })
+    
+    };
 
     componentDidMount()
     {
@@ -104,7 +117,24 @@ hatao(id)
  .catch(err=>console.log(err))
 }
 
-
+Update(id)
+{
+  const obj={
+    id:id,
+    opted:this.state.opted
+  }
+  fetch('/tasks',{
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(obj)
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    console.log(data)
+    window.location.reload(false);
+  })
+  .catch(err=>console.log(err))
+}
 todosubmit(values)
 {
   if(this.state.user==' ')
@@ -390,7 +420,8 @@ dsubmit(values)
       )
     })
 
-     
+    const { selectedOption } = this.state;
+ 
     
       return(
         <div className="main"  >
@@ -742,21 +773,18 @@ dsubmit(values)
     <p>time estimate:{this.state.active.time}</p>
     <p>time spent:{this.state.active.ctime}</p>
       <button className="btn btn-danger" style={{marginLeft:"5px"}} onClick={()=>this.hatao(this.state.active._id)}>Delete</button>
-      <Select options={options} />
-      <button className="btn btn-primary" style={{marginLeft:"5px"}}>Update</button>
+      <Select
+        value={selectedOption}
+        onChange={this.handleChange}
+        options={options}
+      />
+      <button className="btn btn-primary" style={{marginLeft:"5px"}} onClick={()=>this.Update(this.state.active._id)}>Update</button>
 </ModalBody>
 </Modal>
 
 
 
-<Modal isOpen={this.state.badlo} toggle={this.changeshift}>
-  <ModalHeader toggle={this.changeshift}>Category</ModalHeader>
-  <ModalBody>
-     
-      
-    
-  </ModalBody>
-</Modal>
+
 
 
 
