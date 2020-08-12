@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Header from './header.js';
+import Timer from 'react-compound-timer';
 import { 
   Button,Navbar,FormControl } from 'react-bootstrap';
   import {  NavbarBrand, Nav, NavbarToggler, Collapse, NavItem, Jumbotron,
@@ -33,6 +34,8 @@ class Main extends Component {
         this.dukan=this.dukan.bind(this);
         this.hatao=this.hatao.bind(this);
         this.Update=this.Update.bind(this);
+        this.timerstart=this.timerstart.bind(this);
+        this.timerend=this.timerend.bind(this);
         this.state={
           todo:false,
           dotoday:false,
@@ -101,6 +104,18 @@ dukan(item)
 {
  this.setState({active:(item)});
  this.dikhao();
+}
+timerstart(id)
+{
+
+
+
+}
+timerend(id)
+{
+
+
+
 }
 hatao(id)
 {
@@ -350,6 +365,7 @@ dsubmit(values)
     const todotask=this.state.tasks.filter((item)=>item.status=='todo');
     const todotasks=todotask.map((item)=>{
       return(
+        
         <div className="item" onClick={()=>this.dukan(item)}>
           <p style={{paddingLeft:"2px",margin:"0px"}}>{item.taskname}</p>
           <svg class="svg-icon clock" viewBox="0 0 20 20" >
@@ -772,6 +788,8 @@ dsubmit(values)
     <p>des:{this.state.active.description}</p>
     <p>time estimate:{this.state.active.time}</p>
     <p>time spent:{this.state.active.ctime}</p>
+    <button className="btn btn-success" style={{marginLeft:"5px"}} onClick={()=>this.timerstart(this.state.active._id)}>Start</button>
+    <button className="btn btn-success" style={{marginLeft:"5px"}} onClick={()=>this.timerend(this.state.active._id)}>Finish</button>
       <button className="btn btn-danger" style={{marginLeft:"5px"}} onClick={()=>this.hatao(this.state.active._id)}>Delete</button>
       <Select
         value={selectedOption}
@@ -786,7 +804,33 @@ dsubmit(values)
 
 
 
-
+<Timer
+    initialTime={121212}
+    startImmediately={false}
+>
+    {({ start, resume, pause, stop, reset, timerState,getTime }) => (
+        <React.Fragment>
+            <div>
+                <Timer.Days /> Days--
+                <Timer.Hours />:
+                <Timer.Minutes />:
+                <Timer.Seconds /> 
+            </div>
+            <div>{timerState}</div>
+         
+            <br />
+            <div>
+                <button onClick={start}>Start</button>
+                <button onClick={pause}>Pause</button>
+                <button onClick={resume}>Resume</button>
+                <button onClick={stop}>Stop</button>
+                <button onClick={reset}>Reset</button>
+                <button onClick={()=>alert(getTime())}>time</button>
+                
+            </div>
+        </React.Fragment>
+    )}
+</Timer>
 
 
 
