@@ -34,8 +34,9 @@ class Main extends Component {
         this.dukan=this.dukan.bind(this);
         this.hatao=this.hatao.bind(this);
         this.Update=this.Update.bind(this);
-        this.timerstart=this.timerstart.bind(this);
-        this.timerend=this.timerend.bind(this);
+       this.starttime=this.starttime.bind(this);
+       this.endtime=this.endtime.bind(this);
+       this.report=this.report.bind(this);
         this.state={
           todo:false,
           dotoday:false,
@@ -61,6 +62,7 @@ class Main extends Component {
 
     componentDidMount()
     {
+      
       fetch('/users/session')
       .then(res=>res.json())
       .then(data=>
@@ -103,20 +105,89 @@ dikhao()
 dukan(item)
 {
  this.setState({active:(item)});
+ 
  this.dikhao();
 }
-timerstart(id)
+report(id)
 {
-
-
-
+  if(this.state.active.eyear==0)
+  alert("Please Submit to see the result");
+  else{
+     var st=this.state.active.sec+(this.state.active.min)*60+(this.state.active.hours)*3600+(this.state.active.day)*24*3600+(this.state.active.month)*30*24*3600+(this.state.active.year)*365*30*24*3600;
+     var et=this.state.active.esec+(this.state.active.emin)*60+(this.state.active.ehours)*3600+(this.state.active.eday)*24*3600+(this.state.active.emonth)*30*24*3600+(this.state.active.eyear)*365*30*24*3600;
+     var tt=(et-st);
+     if(tt<0)
+     alert("please reset time")
+     else
+     {
+     var time=this.state.active.time;
+     alert("efficiency:"+ (time/tt)*100+"%");
+     }
+  }
 }
-timerend(id)
+endtime(id)
 {
-
-
-
+  const d=new Date();
+  var year=d.getFullYear();
+  var month=d.getMonth();
+  var day=d.getDate();
+  var hours=d.getHours();
+  var min=d.getMinutes();
+  var sec=d.getSeconds();
+ const ob={
+   id:id,
+   sec:sec,
+   min:min,
+   hours:hours,
+   day:day,
+   month:month,
+   year:year
+ }
+ fetch('/tasks/etime',{
+  method:'PUT',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(ob)
+})
+.then(res=>res.json())
+.then(data=>{
+ console.log(data)
+  window.location.reload(false);
+})
+.catch(err=>console.log(err))
 }
+
+starttime(id)
+{
+  const d=new Date();
+  var year=d.getFullYear();
+  var month=d.getMonth();
+  var day=d.getDate();
+  var hours=d.getHours();
+  var min=d.getMinutes();
+  var sec=d.getSeconds();
+ const ob={
+   id:id,
+   sec:sec,
+   min:min,
+   hours:hours,
+   day:day,
+   month:month,
+   year:year
+ }
+ fetch('/tasks/stime',{
+  method:'PUT',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(ob)
+})
+.then(res=>res.json())
+.then(data=>{
+ console.log(data)
+  window.location.reload(false);
+})
+.catch(err=>console.log(err))
+   
+}
+
 hatao(id)
 {
  fetch('/tasks',{
@@ -371,7 +442,7 @@ dsubmit(values)
           <svg class="svg-icon clock" viewBox="0 0 20 20" >
 							<path d="M10.25,2.375c-4.212,0-7.625,3.413-7.625,7.625s3.413,7.625,7.625,7.625s7.625-3.413,7.625-7.625S14.462,2.375,10.25,2.375M10.651,16.811v-0.403c0-0.221-0.181-0.401-0.401-0.401s-0.401,0.181-0.401,0.401v0.403c-3.443-0.201-6.208-2.966-6.409-6.409h0.404c0.22,0,0.401-0.181,0.401-0.401S4.063,9.599,3.843,9.599H3.439C3.64,6.155,6.405,3.391,9.849,3.19v0.403c0,0.22,0.181,0.401,0.401,0.401s0.401-0.181,0.401-0.401V3.19c3.443,0.201,6.208,2.965,6.409,6.409h-0.404c-0.22,0-0.4,0.181-0.4,0.401s0.181,0.401,0.4,0.401h0.404C16.859,13.845,14.095,16.609,10.651,16.811 M12.662,12.412c-0.156,0.156-0.409,0.159-0.568,0l-2.127-2.129C9.986,10.302,9.849,10.192,9.849,10V5.184c0-0.221,0.181-0.401,0.401-0.401s0.401,0.181,0.401,0.401v4.651l2.011,2.008C12.818,12.001,12.818,12.256,12.662,12.412"></path>
 						</svg>
-            <p style={{display:"inline-block"}}>{item.ctime}h/{item.time}h</p>
+            <p style={{display:"inline-block"}}>{item.time}sec</p>
             <svg class="svg-icon clock" viewBox="0 0 20 20">
 							<path d="M18.303,4.742l-1.454-1.455c-0.171-0.171-0.475-0.171-0.646,0l-3.061,3.064H2.019c-0.251,0-0.457,0.205-0.457,0.456v9.578c0,0.251,0.206,0.456,0.457,0.456h13.683c0.252,0,0.457-0.205,0.457-0.456V7.533l2.144-2.146C18.481,5.208,18.483,4.917,18.303,4.742 M15.258,15.929H2.476V7.263h9.754L9.695,9.792c-0.057,0.057-0.101,0.13-0.119,0.212L9.18,11.36h-3.98c-0.251,0-0.457,0.205-0.457,0.456c0,0.253,0.205,0.456,0.457,0.456h4.336c0.023,0,0.899,0.02,1.498-0.127c0.312-0.077,0.55-0.137,0.55-0.137c0.08-0.018,0.155-0.059,0.212-0.118l3.463-3.443V15.929z M11.241,11.156l-1.078,0.267l0.267-1.076l6.097-6.091l0.808,0.808L11.241,11.156z"></path>
 						</svg>
@@ -389,7 +460,7 @@ dsubmit(values)
           <svg class="svg-icon clock" viewBox="0 0 20 20" >
 							<path d="M10.25,2.375c-4.212,0-7.625,3.413-7.625,7.625s3.413,7.625,7.625,7.625s7.625-3.413,7.625-7.625S14.462,2.375,10.25,2.375M10.651,16.811v-0.403c0-0.221-0.181-0.401-0.401-0.401s-0.401,0.181-0.401,0.401v0.403c-3.443-0.201-6.208-2.966-6.409-6.409h0.404c0.22,0,0.401-0.181,0.401-0.401S4.063,9.599,3.843,9.599H3.439C3.64,6.155,6.405,3.391,9.849,3.19v0.403c0,0.22,0.181,0.401,0.401,0.401s0.401-0.181,0.401-0.401V3.19c3.443,0.201,6.208,2.965,6.409,6.409h-0.404c-0.22,0-0.4,0.181-0.4,0.401s0.181,0.401,0.4,0.401h0.404C16.859,13.845,14.095,16.609,10.651,16.811 M12.662,12.412c-0.156,0.156-0.409,0.159-0.568,0l-2.127-2.129C9.986,10.302,9.849,10.192,9.849,10V5.184c0-0.221,0.181-0.401,0.401-0.401s0.401,0.181,0.401,0.401v4.651l2.011,2.008C12.818,12.001,12.818,12.256,12.662,12.412"></path>
 						</svg>
-            <p style={{display:"inline-block"}}>{item.ctime}h/{item.time}h</p>
+            <p style={{display:"inline-block"}}>{item.time}sec</p>
             <svg class="svg-icon clock" viewBox="0 0 20 20">
 							<path d="M18.303,4.742l-1.454-1.455c-0.171-0.171-0.475-0.171-0.646,0l-3.061,3.064H2.019c-0.251,0-0.457,0.205-0.457,0.456v9.578c0,0.251,0.206,0.456,0.457,0.456h13.683c0.252,0,0.457-0.205,0.457-0.456V7.533l2.144-2.146C18.481,5.208,18.483,4.917,18.303,4.742 M15.258,15.929H2.476V7.263h9.754L9.695,9.792c-0.057,0.057-0.101,0.13-0.119,0.212L9.18,11.36h-3.98c-0.251,0-0.457,0.205-0.457,0.456c0,0.253,0.205,0.456,0.457,0.456h4.336c0.023,0,0.899,0.02,1.498-0.127c0.312-0.077,0.55-0.137,0.55-0.137c0.08-0.018,0.155-0.059,0.212-0.118l3.463-3.443V15.929z M11.241,11.156l-1.078,0.267l0.267-1.076l6.097-6.091l0.808,0.808L11.241,11.156z"></path>
 						</svg>
@@ -407,7 +478,7 @@ dsubmit(values)
           <svg class="svg-icon clock" viewBox="0 0 20 20" >
 							<path d="M10.25,2.375c-4.212,0-7.625,3.413-7.625,7.625s3.413,7.625,7.625,7.625s7.625-3.413,7.625-7.625S14.462,2.375,10.25,2.375M10.651,16.811v-0.403c0-0.221-0.181-0.401-0.401-0.401s-0.401,0.181-0.401,0.401v0.403c-3.443-0.201-6.208-2.966-6.409-6.409h0.404c0.22,0,0.401-0.181,0.401-0.401S4.063,9.599,3.843,9.599H3.439C3.64,6.155,6.405,3.391,9.849,3.19v0.403c0,0.22,0.181,0.401,0.401,0.401s0.401-0.181,0.401-0.401V3.19c3.443,0.201,6.208,2.965,6.409,6.409h-0.404c-0.22,0-0.4,0.181-0.4,0.401s0.181,0.401,0.4,0.401h0.404C16.859,13.845,14.095,16.609,10.651,16.811 M12.662,12.412c-0.156,0.156-0.409,0.159-0.568,0l-2.127-2.129C9.986,10.302,9.849,10.192,9.849,10V5.184c0-0.221,0.181-0.401,0.401-0.401s0.401,0.181,0.401,0.401v4.651l2.011,2.008C12.818,12.001,12.818,12.256,12.662,12.412"></path>
 						</svg>
-            <p style={{display:"inline-block"}}>{item.ctime}h/{item.time}h</p>
+            <p style={{display:"inline-block"}}>{item.time}sec</p>
             <svg class="svg-icon clock" viewBox="0 0 20 20">
 							<path d="M18.303,4.742l-1.454-1.455c-0.171-0.171-0.475-0.171-0.646,0l-3.061,3.064H2.019c-0.251,0-0.457,0.205-0.457,0.456v9.578c0,0.251,0.206,0.456,0.457,0.456h13.683c0.252,0,0.457-0.205,0.457-0.456V7.533l2.144-2.146C18.481,5.208,18.483,4.917,18.303,4.742 M15.258,15.929H2.476V7.263h9.754L9.695,9.792c-0.057,0.057-0.101,0.13-0.119,0.212L9.18,11.36h-3.98c-0.251,0-0.457,0.205-0.457,0.456c0,0.253,0.205,0.456,0.457,0.456h4.336c0.023,0,0.899,0.02,1.498-0.127c0.312-0.077,0.55-0.137,0.55-0.137c0.08-0.018,0.155-0.059,0.212-0.118l3.463-3.443V15.929z M11.241,11.156l-1.078,0.267l0.267-1.076l6.097-6.091l0.808,0.808L11.241,11.156z"></path>
 						</svg>
@@ -425,7 +496,7 @@ dsubmit(values)
           <svg class="svg-icon clock" viewBox="0 0 20 20" >
 							<path d="M10.25,2.375c-4.212,0-7.625,3.413-7.625,7.625s3.413,7.625,7.625,7.625s7.625-3.413,7.625-7.625S14.462,2.375,10.25,2.375M10.651,16.811v-0.403c0-0.221-0.181-0.401-0.401-0.401s-0.401,0.181-0.401,0.401v0.403c-3.443-0.201-6.208-2.966-6.409-6.409h0.404c0.22,0,0.401-0.181,0.401-0.401S4.063,9.599,3.843,9.599H3.439C3.64,6.155,6.405,3.391,9.849,3.19v0.403c0,0.22,0.181,0.401,0.401,0.401s0.401-0.181,0.401-0.401V3.19c3.443,0.201,6.208,2.965,6.409,6.409h-0.404c-0.22,0-0.4,0.181-0.4,0.401s0.181,0.401,0.4,0.401h0.404C16.859,13.845,14.095,16.609,10.651,16.811 M12.662,12.412c-0.156,0.156-0.409,0.159-0.568,0l-2.127-2.129C9.986,10.302,9.849,10.192,9.849,10V5.184c0-0.221,0.181-0.401,0.401-0.401s0.401,0.181,0.401,0.401v4.651l2.011,2.008C12.818,12.001,12.818,12.256,12.662,12.412"></path>
 						</svg>
-            <p style={{display:"inline-block"}}>{item.ctime}h/{item.time}h</p>
+            <p style={{display:"inline-block"}}>{item.time}sec</p>
             <svg class="svg-icon clock" viewBox="0 0 20 20">
 							<path d="M18.303,4.742l-1.454-1.455c-0.171-0.171-0.475-0.171-0.646,0l-3.061,3.064H2.019c-0.251,0-0.457,0.205-0.457,0.456v9.578c0,0.251,0.206,0.456,0.457,0.456h13.683c0.252,0,0.457-0.205,0.457-0.456V7.533l2.144-2.146C18.481,5.208,18.483,4.917,18.303,4.742 M15.258,15.929H2.476V7.263h9.754L9.695,9.792c-0.057,0.057-0.101,0.13-0.119,0.212L9.18,11.36h-3.98c-0.251,0-0.457,0.205-0.457,0.456c0,0.253,0.205,0.456,0.457,0.456h4.336c0.023,0,0.899,0.02,1.498-0.127c0.312-0.077,0.55-0.137,0.55-0.137c0.08-0.018,0.155-0.059,0.212-0.118l3.463-3.443V15.929z M11.241,11.156l-1.078,0.267l0.267-1.076l6.097-6.091l0.808,0.808L11.241,11.156z"></path>
 						</svg>
@@ -537,7 +608,7 @@ dsubmit(values)
         <Row className="form-group">
             <Label htmlFor="time" >Time</Label>
                 <Control.text model=".time" id="time" name="time"
-                    placeholder="Target time"
+                    placeholder="Target time in seconds"
                     className="form-control"
                     validators={{
                       required
@@ -609,7 +680,7 @@ dsubmit(values)
         <Row className="form-group">
             <Label htmlFor="time" >Time</Label>
                 <Control.text model=".time" id="time" name="time"
-                    placeholder="Target time"
+                    placeholder="Target time in seconds"
                     className="form-control"
                     validators={{
                       required
@@ -682,7 +753,7 @@ dsubmit(values)
         <Row className="form-group">
             <Label htmlFor="time" >Time</Label>
                 <Control.text model=".time" id="time" name="time"
-                    placeholder="Target time"
+                    placeholder="Target time in seconds"
                     className="form-control"
                     validators={{
                       required
@@ -755,7 +826,7 @@ dsubmit(values)
         <Row className="form-group">
             <Label htmlFor="time" >Time</Label>
                 <Control.text model=".time" id="time" name="time"
-                    placeholder="Target time"
+                    placeholder="Target time in seconds"
                     className="form-control"
                     validators={{
                       required
@@ -785,56 +856,27 @@ dsubmit(values)
 <ModalHeader toggle={this.dikhao}>Hello Brother!!</ModalHeader>
 <ModalBody >
     <p>taskname:{this.state.active.taskname}</p>
-    <p>des:{this.state.active.description}</p>
+    <p>des:{JSON.stringify(this.state.active.description)}</p>
     <p>time estimate:{this.state.active.time}</p>
-    <p>time spent:{this.state.active.ctime}</p>
-    <button className="btn btn-success" style={{marginLeft:"5px"}} onClick={()=>this.timerstart(this.state.active._id)}>Start</button>
-    <button className="btn btn-success" style={{marginLeft:"5px"}} onClick={()=>this.timerend(this.state.active._id)}>Finish</button>
-      <button className="btn btn-danger" style={{marginLeft:"5px"}} onClick={()=>this.hatao(this.state.active._id)}>Delete</button>
+    <hr/>
+    <p>starting time: {this.state.active.day}/{this.state.active.month}/{this.state.active.year} {this.state.active.hours}:{this.state.active.min}:{this.state.active.sec}</p>
+    <p>Finishing time: {this.state.active.eday}/{this.state.active.emonth}/{this.state.active.eyear} {this.state.active.ehours}:{this.state.active.emin}:{this.state.active.esec}</p>
+      <button style={{marginLeft:"5px"}} onClick={()=>this.starttime(this.state.active._id)}>Start</button>
+      <button  style={{marginLeft:"5px"}} onClick={()=>this.endtime(this.state.active._id)}>Submit</button>
+     
+    <hr/>
       <Select
         value={selectedOption}
         onChange={this.handleChange}
         options={options}
       />
+      <br/>
       <button className="btn btn-primary" style={{marginLeft:"5px"}} onClick={()=>this.Update(this.state.active._id)}>Update</button>
+      <button className="btn btn-danger" style={{marginLeft:"5px"}} onClick={()=>this.hatao(this.state.active._id)}>Delete</button>
+      <button className="btn btn-success" style={{marginLeft:"5px"}} onClick={()=>this.report(this.state.active._id)}>Report</button>
+     
 </ModalBody>
 </Modal>
-
-
-
-
-
-<Timer
-    initialTime={121212}
-    startImmediately={false}
->
-    {({ start, resume, pause, stop, reset, timerState,getTime }) => (
-        <React.Fragment>
-            <div>
-                <Timer.Days /> Days--
-                <Timer.Hours />:
-                <Timer.Minutes />:
-                <Timer.Seconds /> 
-            </div>
-            <div>{timerState}</div>
-         
-            <br />
-            <div>
-                <button onClick={start}>Start</button>
-                <button onClick={pause}>Pause</button>
-                <button onClick={resume}>Resume</button>
-                <button onClick={stop}>Stop</button>
-                <button onClick={reset}>Reset</button>
-                <button onClick={()=>alert(getTime())}>time</button>
-                
-            </div>
-        </React.Fragment>
-    )}
-</Timer>
-
-
-
-
 
 
 
@@ -843,3 +885,4 @@ dsubmit(values)
   }
 }
 export default Main;
+// <p>time spent:{this.state.active.ctime}</p>

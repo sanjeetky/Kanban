@@ -22,10 +22,54 @@ var  Taskschema = new Schema({
         type:Number,
         default:0
     },
-    ctime:{
+   hours:{
+       type:Number,
+       default:0
+   },
+   min:{
+    type:Number,
+    default:0
+    },
+    sec:{
+    type:Number,
+    default:0
+     },
+    year:{
+    type:Number,
+    default:0
+    },
+     month:{
+    type:Number,
+    default:0
+    },
+    day:{
+    type:Number,
+    default:0
+    },
+    ehours:{
         type:Number,
         default:0
-    }
+    },
+    emin:{
+     type:Number,
+     default:0
+     },
+     esec:{
+     type:Number,
+     default:0
+      },
+     eyear:{
+     type:Number,
+     default:0
+     },
+      emonth:{
+     type:Number,
+     default:0
+     },
+     eday:{
+     type:Number,
+     default:0
+     }
 });
 
 var Task= mongoose.model('task', Taskschema);
